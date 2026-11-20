@@ -1,33 +1,48 @@
 # Đề 4 · Chuyển khoản QR
 
-> **Mã:** DE04 · **Độ khó:** 4/8 · **Vai trò:** 2 (người trả tiền, người nhận tiền) · **Nền tảng:** App ngân hàng iOS / Android
+> **Mã:** DE04 · **Độ khó:** 4/8 · **Vai trò:** 1 (người chuyển tiền) · **Nền tảng:** App ngân hàng iOS / Android
 
-Tính năng chuyển khoản bằng mã QR trong app ngân hàng: người trả tiền quét mã VietQR (từ camera hoặc ảnh), kiểm tra tên người nhận, nhập số tiền, xác thực và nhận kết quả; người nhận tạo QR của mình (có hoặc không có số tiền) và biết ngay khi tiền về. Đây là đề đầu tiên có **tiền thật đi qua** và **xác thực nhiều mức theo quy định**. Đề gồm 4 tính năng; mỗi tính năng có 1 PRD và 1 SRS riêng.
+Tính năng chuyển khoản bằng mã QR trong app ngân hàng, theo đúng các bước người dùng làm: **quét mã QR → chọn số tiền → xác thực và xác nhận chuyển khoản → hoàn thành**. Đây là đề đầu tiên có **tiền thật đi qua**, xác thực nhiều mức theo quy định và trạng thái "chưa xác định" khi hệ thống chưa có kết quả. Đề gồm 4 tính năng, mỗi bước là một tính năng; mỗi tính năng có 1 PRD và 1 SRS riêng.
 
 ## Tính năng
 
-| **Mã** | **Tính năng** | **Phạm vi** | **PRD** | **SRS** |
+| **Mã** | **Bước** | **Phạm vi** | **PRD** | **SRS** |
 | --- | --- | --- | --- | --- |
-| TN01 | Quét mã QR | Lối tắt quét, camera, ảnh thư viện, phân loại QR, tra tên người nhận, QR không hỗ trợ | [PRD](docs/TN01-quet-ma-qr/PRD.md) | [SRS](docs/TN01-quet-ma-qr/SRS.md) |
-| TN02 | Xác nhận & chuyển tiền | Số tiền, nội dung, hạn mức, cảnh báo lừa đảo, PIN / sinh trắc / khuôn mặt, kết quả, biên lai | [PRD](docs/TN02-xac-nhan-chuyen-tien/PRD.md) | [SRS](docs/TN02-xac-nhan-chuyen-tien/SRS.md) |
-| TN03 | Mã QR nhận tiền | QR của tôi, QR có số tiền, mẫu QR, chia sẻ, in, thông báo tiền về, đọc to, chế độ quầy | [PRD](docs/TN03-ma-qr-nhan-tien/PRD.md) | [SRS](docs/TN03-ma-qr-nhan-tien/SRS.md) |
-| TN04 | Lịch sử & tra soát | Lịch sử, tìm kiếm, chi tiết, chuyển lại, báo lỗi giao dịch, theo dõi tra soát | [PRD](docs/TN04-lich-su-tra-soat/PRD.md) | [SRS](docs/TN04-lich-su-tra-soat/SRS.md) |
+| TN01 | Quét mã QR | Mở quét nhanh, camera hoặc ảnh thư viện, nhận diện VietQR tĩnh và động, tra tên người nhận, QR không hỗ trợ | [PRD](docs/TN01-quet-ma-qr/PRD.md) | [SRS](docs/TN01-quet-ma-qr/SRS.md) |
+| TN02 | Chọn số tiền | Nhập số tiền (QR tĩnh) hoặc số tiền khoá (QR động), bằng chữ, gợi ý nhanh, nội dung, tài khoản nguồn, số dư, hạn mức | [PRD](docs/TN02-chon-so-tien/PRD.md) | [SRS](docs/TN02-chon-so-tien/SRS.md) |
+| TN03 | Xác thực & xác nhận chuyển khoản | Xem lại, xác nhận, cảnh báo lừa đảo và chuyển trùng, PIN / sinh trắc / khuôn mặt, gửi lệnh | [PRD](docs/TN03-xac-thuc-xac-nhan/PRD.md) | [SRS](docs/TN03-xac-thuc-xac-nhan/SRS.md) |
+| TN04 | Hoàn thành chuyển khoản | Đang xử lý, thành công, thất bại, chưa xác định, biên lai, chia sẻ, lưu người nhận, chi tiết giao dịch | [PRD](docs/TN04-hoan-thanh-chuyen-khoan/PRD.md) | [SRS](docs/TN04-hoan-thanh-chuyen-khoan/SRS.md) |
 
-Thứ tự làm gợi ý: TN01 → TN02 → TN03 → TN04.
+Thứ tự làm: TN01 → TN02 → TN03 → TN04, đúng thứ tự các bước của luồng.
 
-## Vòng đời giao dịch chuyển khoản QR (dùng chung cả đề)
+## Luồng chuyển khoản QR
+
+```mermaid
+flowchart LR
+  A["Trang chủ"] --> B["Quét mã QR, TN01"]
+  B --> C["Tra tên người nhận"]
+  C --> D["Chọn số tiền, TN02"]
+  D --> E["Xem lại, Xác nhận, TN03"]
+  E --> F["Xác thực PIN, sinh trắc, khuôn mặt, TN03"]
+  F --> G["Hoàn thành, TN04"]
+  G -->|Quét tiếp| B
+```
+
+## Vòng đời giao dịch (dùng chung cả đề)
 
 ```mermaid
 stateDiagram-v2
   [*] --> NHAP : Quét QR, tra tên xong, TN01
-  NHAP --> CHO_XAC_THUC : Bấm Chuyển tiền, TN02
-  NHAP --> DA_BO : Thoát hoặc dừng ở cảnh báo, TN02
-  CHO_XAC_THUC --> DANG_XU_LY : Xác thực đúng, TN02
+  NHAP --> NHAP : Chọn số tiền, TN02
+  NHAP --> DA_BO : Thoát, dừng ở cảnh báo, TN02, TN03
+  NHAP --> BI_TU_CHOI : Rủi ro bị chặn, TN03
+  NHAP --> CHO_XAC_THUC : Bấm Xác nhận, TN03
   CHO_XAC_THUC --> DA_BO : Hết 3 phút
-  CHO_XAC_THUC --> BI_TU_CHOI : Sai xác thực quá số lần, bị chặn vì rủi ro
-  DANG_XU_LY --> THANH_CONG : Ngân hàng nhận ghi có
-  DANG_XU_LY --> THAT_BAI : Bị từ chối, tiền chưa trừ hoặc đã hoàn
-  DANG_XU_LY --> CHUA_XAC_DINH : Quá 60 giây
+  CHO_XAC_THUC --> BI_TU_CHOI : Sai xác thực quá số lần
+  CHO_XAC_THUC --> DANG_XU_LY : Xác thực đúng, gửi lệnh, TN03
+  DANG_XU_LY --> THANH_CONG : Ngân hàng nhận ghi có, TN04
+  DANG_XU_LY --> THAT_BAI : Bị từ chối, tiền chưa trừ hoặc đã hoàn, TN04
+  DANG_XU_LY --> CHUA_XAC_DINH : Quá 60 giây, TN04
   CHUA_XAC_DINH --> THANH_CONG : Đối soát tự động
   CHUA_XAC_DINH --> THAT_BAI : Đối soát, hoàn tiền
   THANH_CONG --> [*]
@@ -36,77 +51,53 @@ stateDiagram-v2
   BI_TU_CHOI --> [*]
 ```
 
-Khi giao dịch `THANH_CONG`, phía người nhận nhận thông báo tiền về (TN03). Giao dịch `THANH_CONG` hoặc `THAT_BAI` có thể có **yêu cầu tra soát** đi kèm (TN04).
-
 ## Bản đồ màn hình
 
 ```mermaid
 flowchart LR
-  subgraph TRA["Phía người trả tiền"]
-    S01["SCR-01 Trang chủ"]
-    S02["SCR-02 Quét QR"]
-    S03["SCR-03 Xác nhận chuyển tiền"]
-    S04["SCR-04 Xác thực giao dịch"]
-    S05["SCR-05 Kết quả & biên lai"]
-  end
-  subgraph NHAN["Phía người nhận tiền"]
-    S06["SCR-06 QR của tôi"]
-    S07["SCR-07 Tạo QR có số tiền"]
-    S08["SCR-08 Chế độ quầy"]
-  end
-  subgraph CHUNG["Dùng chung"]
-    S09["SCR-09 Lịch sử giao dịch"]
-    S10["SCR-10 Chi tiết giao dịch"]
-    S11["SCR-11 Báo lỗi giao dịch"]
-  end
-  S01 --> S02 --> S03 --> S04 --> S05
-  S01 --> S06
-  S02 --> S06
-  S06 <--> S07
-  S06 --> S08
-  S01 --> S09 --> S10 --> S11
-  S05 --> S10
-  S10 -->|Chuyển lại| S03
-  S06 -.->|Người trả quét| S02
-  S05 -.->|Tiền về| S08
+  S01["SCR-01 Trang chủ"] --> S02["SCR-02 Quét QR"]
+  S02 --> S03["SCR-03 Chọn số tiền"]
+  S03 --> S04["SCR-04 Xác nhận giao dịch"]
+  S04 -->|Sửa| S03
+  S04 --> S05["SCR-05 Xác thực"]
+  S05 --> S06["SCR-06 Kết quả & biên lai"]
+  S06 -->|Quét tiếp| S02
+  S06 --> S07["SCR-07 Chi tiết giao dịch"]
+  S07 -->|Chuyển lại| S03
 ```
 
 ## Bối cảnh chung
 
-Chuyển khoản QR đã thay tiền mặt ở chợ, quán ăn, cửa hàng nhỏ. Người trả tiền cần **nhanh** vì có người chờ phía sau; người nhận cần **biết chắc tiền đã về** vì có thể bị lừa bằng ảnh "chuyển thành công" giả. Cả hai đều có thể là nạn nhân của QR dán đè và lừa đảo qua điện thoại. Bài toán thiết kế chính là cân bằng giữa **tốc độ** và **an toàn**, đồng thời tuân thủ quy định xác thực của Ngân hàng Nhà nước.
+Chuyển khoản QR đã thay tiền mặt ở chợ, quán ăn, cửa hàng nhỏ. Người trả tiền cần **nhanh** vì có người chờ phía sau, nhưng cũng phải **chắc chắn**: QR có thể bị dán đè, số tiền có thể gõ nhầm, và kẻ gian có thể gọi điện dẫn dắt nạn nhân chuyển tiền. Bài toán thiết kế chính là cân bằng tốc độ và an toàn ở mỗi bước, đồng thời tuân thủ quy định xác thực của Ngân hàng Nhà nước.
 
 | **Nhóm người dùng** | **Nhu cầu chính** |
 | --- | --- |
-| Người trả tiền ở cửa hàng | Quét, xác thực, xong trong vài giây; kết quả to rõ |
-| Người chia tiền với bạn bè | Quét ảnh QR từ tin nhắn, QR có sẵn số tiền |
-| Tiểu thương, quán nhỏ | QR cố định, biết tiền về mà không cầm máy, riêng tư trên quầy |
+| Người trả tiền ở cửa hàng | Quét, chọn tiền, xác thực, xong trong vài giây; kết quả to rõ |
+| Người chia tiền với bạn bè | Quét ảnh QR từ tin nhắn, chia sẻ biên lai |
+| Người mua online | QR có sẵn số tiền, nội dung |
 | Người lớn tuổi, ít rành công nghệ | Đọc rõ người nhận và số tiền, được cảnh báo lừa đảo |
 
-Ngoài phạm vi cả đề: mở tài khoản, đăng nhập và cài đặt Smart OTP, đăng ký sinh trắc khuôn mặt (chỉ dẫn link), QR thanh toán qua cổng merchant, QR rút tiền ATM, QR quốc tế, chuyển khoản bằng số tài khoản không qua QR (xem Đề 7), ví điện tử.
+Ngoài phạm vi cả đề: mở tài khoản, đăng nhập và cài Smart OTP, đăng ký sinh trắc khuôn mặt (chỉ dẫn link), phía người nhận (tạo QR, thông báo tiền về), lịch sử giao dịch đầy đủ, tra soát, QR thanh toán qua cổng merchant, QR rút tiền ATM, QR quốc tế, chuyển khoản bằng số tài khoản (xem Đề 7).
 
 ## Quy ước dùng chung
 
-- Tiền tệ VND, không có số lẻ; định dạng `250.000 ₫`; số tiền luôn kèm cách đọc bằng chữ ở màn nhập.
-- Mã QR theo chuẩn VietQR (dựa trên chuẩn EMVCo), người nhận là tài khoản hoặc thẻ của ngân hàng thành viên Napas.
-- Ngưỡng xác thực, hạn mức, phí là **cấu hình**, giá trị trong tài liệu là giá trị hiện hành theo Quyết định 2345/QĐ-NHNN.
-- Mã BR, MSG, UC đánh số liên tục trong cả đề: TN01 dùng BR-01–10, MSG-01–10, UC-01–02; TN02 dùng BR-11–24, MSG-11–24, UC-03–04; TN03 dùng BR-25–34, MSG-25–31, UC-05–06; TN04 dùng BR-35–44, MSG-32–39, UC-07–08.
-- Tổng đài, số điện thoại khẩn hiển thị dạng `{số}`; giá trị do ngân hàng cấu hình.
+- Tiền tệ VND, không có số lẻ; định dạng `250.000 ₫`; số tiền luôn kèm cách đọc bằng chữ ở màn nhập và xác nhận.
+- Mã QR theo chuẩn VietQR (dựa trên chuẩn EMVCo); người nhận là tài khoản hoặc thẻ của ngân hàng thành viên Napas.
+- Ngưỡng xác thực, hạn mức, phí là **cấu hình**; giá trị trong tài liệu là giá trị hiện hành theo Quyết định 2345/QĐ-NHNN.
+- Số tổng đài hiển thị dạng `{số}`.
+- Mã BR, MSG, UC đánh số liên tục trong cả đề: TN01 dùng BR-01–10, MSG-01–10, UC-01–02; TN02 dùng BR-11–20, MSG-11–18, UC-03; TN03 dùng BR-21–30, MSG-19–28, UC-04–05; TN04 dùng BR-31–38, MSG-29–35, UC-06–07.
 
 ## Danh sách màn hình
 
-| **Mã** | **Màn hình** | **Phía** | **Mô tả chi tiết ở** |
+| **Mã** | **Màn hình** | **Bước** | **Mô tả chi tiết ở** |
 | --- | --- | --- | --- |
-| SCR-01 | Trang chủ (lối tắt Quét QR, QR của tôi) | Chung | SRS TN01 |
-| SCR-02 | Quét QR | Người trả | SRS TN01 |
-| SCR-03 | Xác nhận chuyển tiền (gồm màn cảnh báo) | Người trả | SRS TN02 |
-| SCR-04 | Xác thực giao dịch | Người trả | SRS TN02 |
-| SCR-05 | Kết quả & biên lai | Người trả | SRS TN02 |
-| SCR-06 | QR của tôi | Người nhận | SRS TN03 |
-| SCR-07 | Tạo QR có số tiền | Người nhận | SRS TN03 |
-| SCR-08 | Chế độ quầy | Người nhận | SRS TN03 |
-| SCR-09 | Lịch sử giao dịch | Chung | SRS TN04 |
-| SCR-10 | Chi tiết giao dịch | Chung | SRS TN04 |
-| SCR-11 | Báo lỗi giao dịch | Người trả | SRS TN04 |
+| SCR-01 | Trang chủ (lối tắt Quét QR) | Quét mã QR | SRS TN01 |
+| SCR-02 | Quét QR | Quét mã QR | SRS TN01 |
+| SCR-03 | Chọn số tiền | Chọn số tiền | SRS TN02 |
+| SCR-04 | Xác nhận giao dịch (gồm màn cảnh báo) | Xác thực & xác nhận | SRS TN03 |
+| SCR-05 | Xác thực giao dịch | Xác thực & xác nhận | SRS TN03 |
+| SCR-06 | Kết quả & biên lai | Hoàn thành | SRS TN04 |
+| SCR-07 | Chi tiết giao dịch | Hoàn thành | SRS TN04 |
 
 ## Cấu trúc repo
 
@@ -114,16 +105,16 @@ Ngoài phạm vi cả đề: mở tài khoản, đăng nhập và cài đặt Sm
 de04-chuyen-khoan-qr/
 ├── README.md
 └── docs/
-    ├── TN01-quet-ma-qr/            PRD.md · SRS.md
-    ├── TN02-xac-nhan-chuyen-tien/  PRD.md · SRS.md
-    ├── TN03-ma-qr-nhan-tien/       PRD.md · SRS.md
-    └── TN04-lich-su-tra-soat/      PRD.md · SRS.md
+    ├── TN01-quet-ma-qr/                PRD.md · SRS.md
+    ├── TN02-chon-so-tien/              PRD.md · SRS.md
+    ├── TN03-xac-thuc-xac-nhan/         PRD.md · SRS.md
+    └── TN04-hoan-thanh-chuyen-khoan/   PRD.md · SRS.md
 ```
 
 ## Cách dùng bộ tài liệu
 
-1. Đọc README để nắm vòng đời giao dịch: mọi tính năng đều bám theo sơ đồ trạng thái ở trên.
-2. Với mỗi tính năng: đọc PRD, rồi SRS. Luôn thiết kế **cả hai phía**: người trả thấy gì, người nhận thấy gì ở cùng một giao dịch.
-3. Thiết kế đủ trạng thái lỗi và trạng thái "chưa xác định": với app ngân hàng, đây là phần quan trọng nhất.
+1. Đọc README để nắm luồng 4 bước và vòng đời giao dịch.
+2. Với mỗi bước: đọc PRD, rồi SRS. Thiết kế đủ trạng thái lỗi của từng bước (QR không hỗ trợ, thiếu số dư, cảnh báo, sai PIN, chưa xác định).
+3. Ghép các màn thành một prototype liền mạch từ **SCR-01** tới **SCR-06**.
 4. Thiết kế màn hình theo đúng mã SCR, mã MSG trong SRS để dễ đối chiếu khi review.
 5. Sơ đồ viết bằng Mermaid, xem trực tiếp trên GitHub hoặc trình xem Markdown có hỗ trợ Mermaid.

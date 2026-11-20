@@ -2,7 +2,7 @@
 
 # UC-DE04-01 - Quét mã QR
 
-> SRS này mô tả từ lúc mở màn quét đến khi có thông tin người nhận đã tra tên; nhập số tiền, xác thực và chuyển tiền xem [SRS TN02](../TN02-xac-nhan-chuyen-tien/SRS.md).
+> SRS này mô tả từ lúc mở màn quét đến khi có thông tin người nhận đã tra tên; chọn số tiền xem [SRS TN02](../TN02-chon-so-tien/SRS.md).
 
 ## 1. Tổng quan
 
@@ -34,8 +34,8 @@
 | BR-04 | **Ảnh từ thư viện**: JPG, PNG, HEIC ≤ 10 MB. Không có QR → MSG-03. Nhiều QR → khoanh từng QR trên ảnh, người dùng chạm chọn |
 | BR-05 | **Phân loại QR** theo nội dung giải mã: `VIETQR_TINH` (VietQR chuyển tiền, không có số tiền), `VIETQR_DONG` (có số tiền), `URL`, `KHONG_HO_TRO` (QR merchant, ví không liên kết Napas, quốc tế, văn bản khác), `HONG` (sai cấu trúc hoặc sai mã kiểm tra CRC) |
 | BR-06 | **QR động**: số tiền 1.000–499.999.999 ₫; nội dung (nếu có) giữ nguyên. QR có thời hạn mà đã quá hạn → MSG-05, không cho chuyển |
-| BR-07 | **Tra tên người nhận** ngay sau khi giải mã VietQR: cùng ngân hàng → tra nội bộ; khác ngân hàng → tra qua Napas. Có tên → mở **SCR-03** (TN02). Không tồn tại, đóng, bị khoá → MSG-06. Lỗi hoặc quá 5 giây → MSG-07 với "Thử lại" |
-| BR-08 | **Tài khoản đáng ngờ**: tài khoản nhận nằm trong danh sách cảnh báo lừa đảo (của ngân hàng hoặc cơ sở dữ liệu dùng chung) → cờ `CANH_BAO` gửi sang TN02; TN02 hiện cảnh báo trước khi nhập tiền |
+| BR-07 | **Tra tên người nhận** ngay sau khi giải mã VietQR: cùng ngân hàng → tra nội bộ; khác ngân hàng → tra qua Napas. Có tên → mở **SCR-03** Chọn số tiền (TN02). Không tồn tại, đóng, bị khoá → MSG-06. Lỗi hoặc quá 5 giây → MSG-07 với "Thử lại" |
+| BR-08 | **Tài khoản đáng ngờ**: tài khoản nhận nằm trong danh sách cảnh báo lừa đảo (của ngân hàng hoặc cơ sở dữ liệu dùng chung) → cờ `CANH_BAO` đi theo giao dịch; **SCR-03** hiện banner cảnh báo, và bước xác nhận (TN03) hiện màn cảnh báo toàn trang |
 | BR-09 | **QR là URL** → hiện tên miền đầy đủ, MSG-04; chỉ mở bằng trình duyệt ngoài khi người dùng bấm "Mở"; không bao giờ mở trong app ngân hàng |
 | BR-10 | **Không lưu ảnh**: ảnh camera không lưu; ảnh thư viện chỉ đọc để giải mã, không tải lên máy chủ. Chỉ chuỗi QR đã giải mã được gửi lên để tra tên |
 
@@ -183,8 +183,7 @@ flowchart TD
 | **#** | **Thành phần** | **Loại** | **Hành vi** |
 | --- | --- | --- | --- |
 | 1 | Nút Quét QR | Tab bar, nút giữa | Nổi bật nhất trên thanh điều hướng; mở **SCR-02** |
-| 2 | Nút QR của tôi | Lối tắt | Mở **SCR-06** (TN03) |
-| 3 | Số dư tài khoản chính | Card | Ẩn mặc định, chạm con mắt để hiện |
+| 2 | Số dư tài khoản chính | Card | Ẩn mặc định, chạm con mắt để hiện |
 
 ### SCR-02 Quét QR
 
@@ -196,11 +195,10 @@ flowchart TD
 | 4 | Đèn flash | Icon toggle | Bật, tắt đèn |
 | 5 | Phóng to | Slider | 1×–4× |
 | 6 | Chọn ảnh QR | Button | Mở thư viện ảnh (BR-04) |
-| 7 | QR của tôi | Button | Mở **SCR-06** (TN03) |
-| 8 | Đóng | Icon | Về màn trước |
-| 9 | Gợi ý | Banner | MSG-02 sau 15 giây |
-| 10 | Lớp phủ kiểm tra | Overlay | "Đang kiểm tra người nhận…" khi tra tên |
-| 11 | Chế độ không camera | Empty state | MSG-01, "Mở cài đặt", "Chọn ảnh QR" |
+| 7 | Đóng | Icon | Về màn trước |
+| 8 | Gợi ý | Banner | MSG-02 sau 15 giây |
+| 9 | Lớp phủ kiểm tra | Overlay | "Đang kiểm tra người nhận…" khi tra tên |
+| 10 | Chế độ không camera | Empty state | MSG-01, "Mở cài đặt", "Chọn ảnh QR" |
 
 ## 8. API
 
@@ -228,7 +226,7 @@ sequenceDiagram
   end
   API->>API: Kiểm tra danh sách cảnh báo
   API-->>App: Tên, ngân hàng, risk_flag, inquiry_id
-  App->>N: SCR-03 Xác nhận chuyển tiền
+  App->>N: SCR-03 Chọn số tiền
 ```
 
 **Map lỗi → thông báo**

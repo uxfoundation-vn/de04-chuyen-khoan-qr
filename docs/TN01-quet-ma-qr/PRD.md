@@ -66,7 +66,7 @@ Không có "QR không hợp lệ" chung chung: nói rõ đây là loại QR gì 
 
 ### 4.4 Không chuyển tiền trong màn quét
 
-Màn quét chỉ đọc mã. Mọi giao dịch đều đi qua màn xác nhận (TN02).
+Màn quét chỉ đọc mã. Sau khi quét luôn sang bước chọn số tiền (TN02) và bước xác thực, xác nhận (TN03).
 
 ## 5. Quy tắc nghiệp vụ
 
@@ -94,7 +94,7 @@ flowchart LR
   G --> H{"Loại QR"}
   H -->|VietQR| I["Tra tên người nhận"]
   H -->|Khác| J["Báo loại QR, gợi ý"]
-  I --> K["Xác nhận chuyển tiền, TN02"]
+  I --> K["Chọn số tiền, TN02"]
 ```
 
 | **Bước** | **Giai đoạn** | **Trải nghiệm** | **Đầu ra** |
@@ -152,7 +152,7 @@ AC01: QR hợp lệ → tra tên tại ngân hàng nhận; hiện tên, ngân h�
 
 AC02: Tài khoản không tồn tại, bị khoá → báo, không cho chuyển.
 
-AC03: Tài khoản nằm trong danh sách cảnh báo lừa đảo → cảnh báo nổi bật trước khi tiếp tục (chi tiết cảnh báo ở TN02).
+AC03: Tài khoản nằm trong danh sách cảnh báo lừa đảo → cảnh báo nổi bật trước khi tiếp tục (cảnh báo toàn trang ở bước xác nhận, TN03).
 
 #### US3.2 QR không phải chuyển khoản
 
@@ -188,4 +188,4 @@ AC03: QR hỏng, sai mã kiểm tra → báo quét lại.
 - Có cho quét khi chưa đăng nhập không? → **Đã chốt:** Không. Chạm Quét QR ở màn đăng nhập sẽ yêu cầu sinh trắc trước, rồi mở camera (SRS BR-01).
 - Tra tên người nhận lúc nào? → **Đã chốt:** Ngay sau khi nhận diện, trước khi mở màn nhập số tiền (SRS BR-07).
 - QR động có hạn sử dụng không? → **Đã chốt:** Nếu QR chứa thời hạn thì kiểm tra; quá hạn thì báo và không cho chuyển (SRS BR-06).
-- Có lưu lịch sử mã đã quét? → **Đã chốt:** Không lưu riêng; người nhận đã chuyển thành công nằm trong lịch sử giao dịch (TN04).
+- Có lưu lịch sử mã đã quét? → **Đã chốt:** Không lưu riêng; người nhận đã chuyển thành công nằm trong lịch sử giao dịch sẵn có của app; chi tiết giao dịch xem TN04.
