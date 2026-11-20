@@ -2,13 +2,13 @@
 
 > **Mã:** DE04 · **Độ khó:** 4/8 · **Vai trò:** 1 (người chuyển tiền) · **Nền tảng:** App ngân hàng iOS / Android
 
-Tính năng chuyển khoản bằng mã QR trong app ngân hàng, theo đúng các bước người dùng làm: **quét mã QR → chọn số tiền → xác thực và xác nhận chuyển khoản → hoàn thành**. Đây là đề đầu tiên có **tiền thật đi qua**, xác thực nhiều mức theo quy định và trạng thái "chưa xác định" khi hệ thống chưa có kết quả. Đề gồm **1 tính năng**, là **1 luồng** gồm 4 bước và các màn hình; tài liệu gồm 1 PRD và 1 SRS.
+Tính năng chuyển khoản bằng mã QR trong app ngân hàng, theo đúng các bước người dùng làm: **quét mã QR → chọn số tiền → xác nhận, xem lại và xác thực chuyển khoản → hoàn thành**. Đây là đề đầu tiên có **tiền thật đi qua**, xác thực nhiều mức theo quy định và trạng thái "chưa xác định" khi hệ thống chưa có kết quả. Đề gồm **1 tính năng**, là **1 luồng** gồm 4 bước và các màn hình; tài liệu gồm 1 PRD và 1 SRS.
 
 ## Tính năng
 
 | **Tính năng** | **Luồng** | **PRD** | **SRS** |
 | --- | --- | --- | --- |
-| Chuyển khoản QR | Quét mã QR → Chọn số tiền → Xác thực & xác nhận chuyển khoản → Hoàn thành chuyển khoản | [PRD](docs/PRD.md) | [SRS](docs/SRS.md) |
+| Chuyển khoản QR | Quét mã QR → Chọn số tiền → Xác nhận & xác thực chuyển khoản → Hoàn thành chuyển khoản | [PRD](docs/PRD.md) | [SRS](docs/SRS.md) |
 
 ## Các bước và màn hình của luồng
 
@@ -16,10 +16,10 @@ Tính năng chuyển khoản bằng mã QR trong app ngân hàng, theo đúng c�
 | --- | --- | --- | --- |
 | Bước 1 | Quét mã QR | SCR-01, SCR-02 | Mở quét nhanh, camera hoặc ảnh thư viện, nhận diện VietQR tĩnh và động, tra tên người nhận, QR không hỗ trợ |
 | Bước 2 | Chọn số tiền | SCR-03 | Nhập số tiền (QR tĩnh) hoặc số tiền khoá (QR động), bằng chữ, gợi ý nhanh, nội dung, tài khoản nguồn, số dư, hạn mức |
-| Bước 3 | Xác thực & xác nhận chuyển khoản | SCR-04, SCR-05 | Xem lại, xác nhận, cảnh báo lừa đảo và chuyển trùng, PIN / sinh trắc / khuôn mặt, gửi lệnh |
+| Bước 3 | Xác nhận & xác thực chuyển khoản | SCR-04, SCR-05 | Bấm Xác nhận, xem lại, cảnh báo lừa đảo và chuyển trùng, PIN / sinh trắc / khuôn mặt, gửi lệnh |
 | Bước 4 | Hoàn thành chuyển khoản | SCR-06, SCR-07 | Đang xử lý, thành công, thất bại, chưa xác định, biên lai, chia sẻ, lưu người nhận, chi tiết giao dịch |
 
-Luồng: Bước 1 Quét mã QR → Bước 2 Chọn số tiền → Bước 3 Xác thực & xác nhận chuyển khoản → Bước 4 Hoàn thành chuyển khoản.
+Luồng: Bước 1 Quét mã QR → Bước 2 Chọn số tiền → Bước 3 Xác nhận & xác thực chuyển khoản → Bước 4 Hoàn thành chuyển khoản.
 
 ## Luồng chuyển khoản QR
 
@@ -28,7 +28,7 @@ flowchart LR
   A["Trang chủ"] --> B["Quét mã QR, Bước 1"]
   B --> C["Tra tên người nhận"]
   C --> D["Chọn số tiền, Bước 2"]
-  D --> E["Xem lại, Xác nhận, Bước 3"]
+  D --> E["Bấm Xác nhận, xem lại giao dịch, Bước 3"]
   E --> F["Xác thực PIN, sinh trắc, khuôn mặt, Bước 3"]
   F --> G["Hoàn thành, Bước 4"]
   G -->|Quét tiếp| B
@@ -42,7 +42,7 @@ stateDiagram-v2
   NHAP --> NHAP : Chọn số tiền, Bước 2
   NHAP --> DA_BO : Thoát, dừng ở cảnh báo, Bước 2, Bước 3
   NHAP --> BI_TU_CHOI : Rủi ro bị chặn, Bước 3
-  NHAP --> CHO_XAC_THUC : Bấm Xác nhận, Bước 3
+  NHAP --> CHO_XAC_THUC : Bấm Chuyển tiền ở màn xem lại, Bước 3
   CHO_XAC_THUC --> DA_BO : Hết 3 phút
   CHO_XAC_THUC --> BI_TU_CHOI : Sai xác thực quá số lần
   CHO_XAC_THUC --> DANG_XU_LY : Xác thực đúng, gửi lệnh, Bước 3
@@ -63,7 +63,7 @@ stateDiagram-v2
 flowchart LR
   S01["SCR-01 Trang chủ"] --> S02["SCR-02 Quét QR"]
   S02 --> S03["SCR-03 Chọn số tiền"]
-  S03 --> S04["SCR-04 Xác nhận giao dịch"]
+  S03 --> S04["SCR-04 Xem lại giao dịch"]
   S04 -->|Sửa| S03
   S04 --> S05["SCR-05 Xác thực"]
   S05 --> S06["SCR-06 Kết quả & biên lai"]
@@ -100,8 +100,8 @@ Ngoài phạm vi cả đề: mở tài khoản, đăng nhập và cài Smart OTP
 | SCR-01 | Trang chủ (lối tắt Quét QR) | Quét mã QR | Bước 1 |
 | SCR-02 | Quét QR | Quét mã QR | Bước 1 |
 | SCR-03 | Chọn số tiền | Chọn số tiền | Bước 2 |
-| SCR-04 | Xác nhận giao dịch (gồm màn cảnh báo) | Xác thực & xác nhận | Bước 3 |
-| SCR-05 | Xác thực giao dịch | Xác thực & xác nhận | Bước 3 |
+| SCR-04 | Xem lại giao dịch (gồm màn cảnh báo) | Xác nhận & xác thực | Bước 3 |
+| SCR-05 | Xác thực giao dịch | Xác nhận & xác thực | Bước 3 |
 | SCR-06 | Kết quả & biên lai | Hoàn thành | Bước 4 |
 | SCR-07 | Chi tiết giao dịch | Hoàn thành | Bước 4 |
 

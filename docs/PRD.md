@@ -2,13 +2,13 @@
 
 # PRD Chuyển khoản QR
 
-> Đề gồm **1 tính năng**, là **1 luồng** gồm 4 bước và các màn hình: Quét mã QR → Chọn số tiền → Xác thực & xác nhận chuyển khoản → Hoàn thành chuyển khoản. Sơ đồ chung xem [README](../README.md).
+> Đề gồm **1 tính năng**, là **1 luồng** gồm 4 bước và các màn hình: Quét mã QR → Chọn số tiền → Xác nhận & xác thực chuyển khoản → Hoàn thành chuyển khoản. Sơ đồ chung xem [README](../README.md).
 
 ## 1. Bối cảnh và vấn đề
 
 ### 1.1 Bối cảnh
 
-Tính năng chuyển khoản bằng mã QR trong app ngân hàng, theo đúng các bước người dùng làm: **quét mã QR → chọn số tiền → xác thực và xác nhận chuyển khoản → hoàn thành**. Đây là đề đầu tiên có **tiền thật đi qua**, xác thực nhiều mức theo quy định và trạng thái "chưa xác định" khi hệ thống chưa có kết quả.
+Tính năng chuyển khoản bằng mã QR trong app ngân hàng, theo đúng các bước người dùng làm: **quét mã QR → chọn số tiền → xác nhận, xem lại và xác thực chuyển khoản → hoàn thành**. Đây là đề đầu tiên có **tiền thật đi qua**, xác thực nhiều mức theo quy định và trạng thái "chưa xác định" khi hệ thống chưa có kết quả.
 
 Chuyển khoản QR đã thay tiền mặt ở chợ, quán ăn, cửa hàng nhỏ. Người trả tiền cần **nhanh** vì có người chờ phía sau, nhưng cũng phải **chắc chắn**: QR có thể bị dán đè, số tiền có thể gõ nhầm, và kẻ gian có thể gọi điện dẫn dắt nạn nhân chuyển tiền. Bài toán thiết kế chính là cân bằng tốc độ và an toàn ở mỗi bước, đồng thời tuân thủ quy định xác thực của Ngân hàng Nhà nước.
 
@@ -42,10 +42,10 @@ Chuyển khoản QR đã thay tiền mặt ở chợ, quán ăn, cửa hàng nh�
 - Từ mở app tới nhận diện được QR ≤ 5 giây (trung vị) khi đã bật đăng nhập sinh trắc.
 - Tỉ lệ nhận diện thành công lần quét đầu ≥ 95% với QR hợp lệ.
 - 100% QR chuyển khoản hiện **tên chủ tài khoản thật** từ ngân hàng nhận trước khi nhập số tiền.
-- Thời gian từ khi vào màn chọn số tiền tới bấm Tiếp tục ≤ 8 giây (trung vị) với QR tĩnh.
+- Thời gian từ khi vào màn chọn số tiền tới bấm Xác nhận ≤ 8 giây (trung vị) với QR tĩnh.
 - Khiếu nại chuyển sai số tiền qua QR giảm 50%.
 - 100% giao dịch QR động chuyển đúng số tiền của QR.
-- Thời gian từ màn xác nhận tới gửi lệnh ≤ 7 giây (trung vị) với giao dịch dưới ngưỡng khuôn mặt.
+- Thời gian từ màn xem lại tới gửi lệnh ≤ 7 giây (trung vị) với giao dịch dưới ngưỡng khuôn mặt.
 - ≥ 30% giao dịch gặp cảnh báo lừa đảo được khách tự dừng.
 - Tỉ lệ bỏ dở ở bước xác thực khuôn mặt ≤ 10%.
 - ≥ 99% giao dịch có kết quả cuối trong 60 giây.
@@ -89,9 +89,9 @@ Chuyển khoản QR đã thay tiền mặt ở chợ, quán ăn, cửa hàng nh�
 - Chọn tài khoản nguồn; hiện số dư khả dụng.
 - Kiểm tra ngay số dư, hạn mức giao dịch, hạn mức ngày; hiện phí.
 
-**Bước 3 · Xác thực & xác nhận chuyển khoản**
+**Bước 3 · Xác nhận & xác thực chuyển khoản**
 
-- Màn xác nhận: người nhận, số tiền và bằng chữ, nội dung, tài khoản nguồn, phí, tổng trừ, cách xác thực sẽ dùng.
+- Màn xem lại: người nhận, số tiền và bằng chữ, nội dung, tài khoản nguồn, phí, tổng trừ, cách xác thực sẽ dùng.
 - Cảnh báo người nhận đáng ngờ, giao dịch bất thường; cảnh báo chuyển trùng.
 - Xác thực theo mức: PIN Smart OTP hoặc sinh trắc thiết bị; sinh trắc khuôn mặt khi vượt ngưỡng hoặc thiết bị mới.
 - Giới hạn số lần sai, thời gian chờ xác thực.
@@ -150,13 +150,13 @@ Không đủ tiền, vượt hạn mức hiện ngay khi gõ, không đợi tớ
 
 Số tiền người nhận đặt trong QR không sửa được.
 
-### 4.8 Xem lại rồi mới xác thực
+### 4.8 Xác nhận rồi xem lại, sau đó mới xác thực
 
-Màn xác nhận là một bước riêng, đọc từ trên xuống: người nhận → số tiền → nội dung → nguồn → phí. Bấm "Xác nhận" xong mới xác thực.
+Bấm "Xác nhận" ở màn chọn số tiền xong mới hiện màn xem lại. Màn xem lại là một bước riêng, đọc từ trên xuống; bấm "Chuyển tiền" ở màn này mới sang xác thực.
 
 ### 4.9 Nói trước khi đòi
 
-Nếu cần quét khuôn mặt, màn xác nhận báo trước, kèm lý do.
+Nếu cần quét khuôn mặt, màn xem lại báo trước, kèm lý do.
 
 ### 4.10 Cảnh báo phải làm người dùng dừng lại
 
@@ -213,7 +213,7 @@ Biên lai có mã giao dịch, thời gian tới giây; không có số dư.
 flowchart LR
   L1["Bước 1 · Quét mã QR"]
   L2["Bước 2 · Chọn số tiền"]
-  L3["Bước 3 · Xác thực & xác nhận chuyển khoản"]
+  L3["Bước 3 · Xác nhận & xác thực chuyển khoản"]
   L4["Bước 4 · Hoàn thành chuyển khoản"]
   L1 --> L2
   L2 --> L3
@@ -255,8 +255,8 @@ flowchart LR
   C --> E["Sửa nội dung, chọn tài khoản nguồn"]
   D --> E
   E --> F{"Đủ số dư, trong hạn mức?"}
-  F -->|Không| G["Báo ngay, nút Tiếp tục tắt"]
-  F -->|Có| H["Tiếp tục, Bước 3"]
+  F -->|Không| G["Báo ngay, nút Xác nhận tắt"]
+  F -->|Có| H["Xác nhận, Bước 3"]
 ```
 
 | **Bước** | **Giai đoạn** | **Trải nghiệm** | **Đầu ra** |
@@ -264,17 +264,17 @@ flowchart LR
 | 1 | Xem người nhận | Tên, ngân hàng ở đầu màn | Biết chuyển cho ai |
 | 2 | Chọn số tiền | Bàn phím số, bằng chữ, gợi ý | Số tiền |
 | 3 | Nội dung, nguồn | Nội dung mặc định, tài khoản, số dư | Lệnh nháp |
-| 4 | Tiếp tục | Kiểm tra số dư, hạn mức | Sang xác nhận |
+| 4 | Xác nhận | Kiểm tra số dư, hạn mức | Bấm Xác nhận, sang màn xem lại |
 
-### 6.4 Bước 3 · Xác thực & xác nhận chuyển khoản
+### 6.4 Bước 3 · Xác nhận & xác thực chuyển khoản
 
 ```mermaid
 flowchart LR
-  A["Chọn số tiền xong, Bước 2"] --> B["Màn xác nhận, xem lại"]
+  A["Bấm Xác nhận ở màn chọn số tiền, Bước 2"] --> B["Màn xem lại giao dịch"]
   B --> C{"Có cảnh báo?"}
   C -->|Lừa đảo| D["Màn cảnh báo"]
   C -->|Trùng| E["Hỏi chuyển thêm lần nữa?"]
-  C -->|Không| F["Bấm Xác nhận"]
+  C -->|Không| F["Bấm Chuyển tiền"]
   D -->|Dừng| X["Huỷ giao dịch"]
   D -->|Vẫn tiếp tục| F
   E -->|Vẫn chuyển| F
@@ -290,7 +290,7 @@ flowchart LR
 | --- | --- | --- | --- |
 | 1 | Xem lại | Toàn bộ thông tin, cách xác thực | Người dùng chắc chắn |
 | 2 | Cảnh báo (nếu có) | Màn cảnh báo, thời gian chờ | Dừng hoặc tiếp tục có ý thức |
-| 3 | Xác nhận | Bấm "Xác nhận" | Lệnh chờ xác thực |
+| 3 | Chuyển tiền | Bấm "Chuyển tiền" trên màn xem lại | Lệnh chờ xác thực |
 | 4 | Xác thực | PIN, sinh trắc, khuôn mặt | Lệnh được ký, gửi đi |
 
 ### 6.5 Bước 4 · Hoàn thành chuyển khoản
@@ -389,7 +389,7 @@ AC02: Dòng bằng chữ ngay dưới: "Năm mươi nghìn đồng".
 
 AC03: Gõ "50" → gợi ý 50.000, 500.000, 5.000.000 ₫; chạm để chọn.
 
-AC04: Xoá hết → nút Tiếp tục tắt.
+AC04: Xoá hết → nút Xác nhận tắt.
 
 #### UC5. Số tiền với QR động
 
@@ -413,15 +413,15 @@ AC02: Vượt hạn mức giao dịch hoặc hạn mức còn lại trong ngày 
 
 AC03: Dưới 1.000 ₫ → báo số tiền tối thiểu.
 
-### Bước 3 · Xác thực & xác nhận chuyển khoản
+### Bước 3 · Xác nhận & xác thực chuyển khoản
 
-#### UC7. Xem lại và xác nhận
+#### UC7. Xem lại giao dịch
 
 ##### US7.1 Xem lại trước khi chuyển
 
 User Story: Là người trả tiền, tôi muốn xem lại người nhận và số tiền trước khi xác thực để sửa kịp nếu sai.
 
-AC01: Màn xác nhận hiện: số tiền lớn và bằng chữ, tên người nhận, ngân hàng, số tài khoản, nội dung, tài khoản nguồn, phí, tổng trừ.
+AC01: Màn xem lại hiện: số tiền lớn và bằng chữ, tên người nhận, ngân hàng, số tài khoản, nội dung, tài khoản nguồn, phí, tổng trừ.
 
 AC02: Có dòng "Xác thực bằng {PIN / sinh trắc / khuôn mặt}".
 
@@ -437,7 +437,7 @@ AC02: Vừa chuyển cùng người, cùng số tiền trong 5 phút → hỏi l
 
 ##### US8.1 Xác thực nhanh
 
-AC01: Đã bật sinh trắc thiết bị → hỏi vân tay hoặc Face ID ngay khi bấm Xác nhận.
+AC01: Đã bật sinh trắc thiết bị → hỏi vân tay hoặc Face ID ngay khi bấm Chuyển tiền.
 
 AC02: Sinh trắc thất bại hoặc huỷ → nhập PIN 6 số.
 
@@ -449,7 +449,7 @@ AC01: Hướng dẫn trước khi mở camera (nhìn thẳng, đủ sáng, bỏ 
 
 AC02: Thất bại → cho thử lại; 3 lần → tạm khoá 15 phút.
 
-AC03: Chưa đăng ký khuôn mặt → báo ngay ở màn xác nhận, dẫn tới đăng ký, không cho chuyển.
+AC03: Chưa đăng ký khuôn mặt → báo ngay ở màn xem lại, dẫn tới đăng ký, không cho chuyển.
 
 ##### US8.3 Không gửi trùng
 
@@ -506,7 +506,7 @@ AC02: Giao dịch thành công có nút "Chuyển lại" (người nhận, số 
 | Tỉ lệ dùng ảnh thư viện | Phiên quét bằng ảnh / tổng phiên quét | Theo dõi |
 | Tỉ lệ QR không hỗ trợ | Theo loại QR | Theo dõi; ưu tiên phase sau |
 | Tỉ lệ dừng sau cảnh báo | Phiên dừng sau cảnh báo tài khoản đáng ngờ / phiên gặp cảnh báo | Theo dõi |
-| Thời gian chọn số tiền | Mở **SCR-03** → bấm Tiếp tục (trung vị, QR tĩnh) | ≤ 8 giây |
+| Thời gian chọn số tiền | Mở **SCR-03** → bấm Xác nhận (trung vị, QR tĩnh) | ≤ 8 giây |
 | Dùng gợi ý nhanh | Lượt chọn gợi ý / lượt nhập số tiền | Theo dõi |
 | Gặp lỗi số dư, hạn mức | Lượt hiện lỗi / lượt vào **SCR-03** | Theo dõi |
 | Sửa số tiền ở bước xác nhận | Lượt quay lại sửa từ Bước 3 / lượt tới Bước 3 | Theo dõi; cao là dấu hiệu nhập dễ sai |
@@ -552,10 +552,10 @@ AC02: Giao dịch thành công có nút "Chuyển lại" (người nhận, số 
 - Có cho chọn tài khoản nguồn khác không? → **Đã chốt:** Có, mọi tài khoản thanh toán VND đứng tên khách (SRS BR-14).
 - QR động có số tiền vượt hạn mức thì sao? → **Đã chốt:** Hiện số tiền, báo vượt hạn mức, không cho tiếp tục; gợi ý đổi hạn mức (SRS BR-16).
 - Có lưu số tiền lần trước cho cùng người nhận? → **Đã chốt:** Không gợi ý số tiền theo lịch sử ở MVP (SRS BR-19).
-- Xác nhận trước hay xác thực trước? → **Đã chốt:** Xem lại và bấm Xác nhận trước, rồi mới xác thực (SRS BR-21).
+- Thứ tự xác nhận, xem lại, xác thực? → **Đã chốt:** Bấm "Xác nhận" ở màn chọn số tiền → màn xem lại → bấm "Chuyển tiền" → xác thực (SRS BR-21).
 - Có cảnh báo trùng với giao dịch chưa xác định? → **Đã chốt:** Có (SRS BR-24).
 - Rủi ro rất cao thì sao? → **Đã chốt:** Chặn giao dịch, hướng dẫn gọi tổng đài; không có tạm giữ ở MVP (SRS BR-23).
-- Đổi tài khoản nguồn ở màn xác nhận được không? → **Đã chốt:** Không; bấm Sửa để quay lại Bước 2 (SRS BR-21).
+- Đổi tài khoản nguồn ở màn xem lại được không? → **Đã chốt:** Không; bấm Sửa để quay lại Bước 2 (SRS BR-21).
 - Màn đang xử lý có cho thoát? → **Đã chốt:** Không trong 10 giây đầu; sau đó cho "Về trang chủ", giao dịch vẫn xử lý tiếp (SRS BR-31).
 - Thất bại có hoàn phí? → **Đã chốt:** Có, hoàn cả số tiền và phí nếu đã trừ (SRS BR-33).
 - Biên lai có hiện số tài khoản nguồn? → **Đã chốt:** Có, che giữa (SRS BR-35).
